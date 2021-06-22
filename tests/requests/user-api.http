@@ -1,0 +1,30 @@
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "username": "dtr_beast",
+  "password": "hello-lol",
+  "name": "Aditya Sharma"
+}
+
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "username": "dtr_beast",
+  "password": "he",
+  "name": "Aditya Sharma"
+}
+
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "name": "Hampton Barrera",
+  "username": "Foreman6Walsh",
+  "password": "84Strong}86"
+}
+
+###

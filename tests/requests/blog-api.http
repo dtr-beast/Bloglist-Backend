@@ -1,0 +1,53 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "author": "Ram Kishor",
+  "likes": 5
+}
+
+###
+GET http://localhost:3001/api/blogs
+Accept: application/json
+
+###
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Type wars",
+  "author": "Robert C. Martin",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  "likes": 2
+}
+
+###
+DELETE http://localhost:3001/api/blogs/5a422bc61b54a676234d17fc
+
+###
+PUT http://localhost:3001/api/blogs/60ab52c98ee75e1b00264cbe
+Content-Type: application/json
+
+{
+  "likes": 6
+}
+
+###
+
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkZvcmVtYW42V2Fsc2giLCJpZCI6IjYwYWY1NDdlZmNhNDAyMzE2OGNlMjk4OCIsImlhdCI6MTYyMjQ0Mjc5N30.owJ6fqpprInvDfZEcHyUm1D8_LlCtlcYyRaDWUF2Rnw
+
+{
+  "title": "Type wars 1",
+  "author": "Robert C. Martin",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  "likes": 2,
+  "user": "60af547efca4023168ce2988"
+}
+
+###
+
+DELETE http://localhost:3001/api/blogs/60b48c5d2e4d19382cfb9b35
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkZvcmVtYW42V2Fsc2giLCJpZCI6IjYwYWY1NDdlZmNhNDAyMzE2OGNlMjk4OCIsImlhdCI6MTYyMjQ0NDc2MH0.RoJkDh3QmQd101RVp2AtOWDm4-ksvVCzzXoIG0JiE-k
+###

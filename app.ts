@@ -6,6 +6,7 @@ import cors = require('cors')
 import blogsRouter = require('./routes/blogs')
 import userRouter = require('./routes/users')
 import loginRouter = require('./routes/login')
+import testingRouter = require("./routes/testing");
 import middleware = require('./utils/middleware')
 import logger = require('./utils/logger')
 import mongoose = require('mongoose')
@@ -32,11 +33,15 @@ app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
-// app.use(middleware.userExtractor)
 
 app.use('/api/blogs', middleware.userExtractor, blogsRouter)
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
+
+if (process.env.NODE_ENV === 'TEST') {
+    app.use('/api/testing', testingRouter)
+    logger.info("Testing Mode")
+}
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

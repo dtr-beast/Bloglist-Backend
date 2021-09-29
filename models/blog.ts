@@ -1,6 +1,14 @@
-const mongoose = require('mongoose')
+import {Schema, model} from 'mongoose';
 
-const blogSchema = new mongoose.Schema({
+interface Blogs {
+    title: string,
+    author: string,
+    url: string,
+    likes: number,
+    user: Schema.Types.ObjectId
+}
+
+const blogSchema = new Schema<Blogs>({
     title: {
         type: String,
         required: true
@@ -18,18 +26,18 @@ const blogSchema = new mongoose.Schema({
         default: 0
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     }
 })
 
 blogSchema.set('toJSON', {
-    transform: (document, returnedObjects) => {
-        returnedObjects.id = returnedObjects._id
-        delete returnedObjects._id
-        delete returnedObjects.__v
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id
+        delete returnedObject._id
+        delete returnedObject.__v
     }
 })
 
-export const Blog = mongoose.model('Blog', blogSchema)
+export const Blog = model<Blogs>('Blog', blogSchema)

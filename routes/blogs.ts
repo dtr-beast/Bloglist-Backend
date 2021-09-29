@@ -14,7 +14,7 @@ blogsRouter.get('/', async (req, res) => {
 
 blogsRouter.get('/:id', async (req, res) => {
     const ID = req.params.id
-    const blog = await Blog.findByID(ID).populate('user', {name: 1})
+    const blog = await Blog.findById(ID).populate('user', {name: 1})
     res.json(blog)
 })
 
@@ -22,15 +22,12 @@ blogsRouter.get('/:id', async (req, res) => {
 blogsRouter.post('/', async (req, res) => {
 
     const body = req.body
-    const decodedToken = jwt.verify(req.token, SIGN_KEY)
-    if (!req.token || !decodedToken.id) {
-        return res.status(401).json({error: 'token missing or invalid'})
+    if (!req.user) {
+        return res.status(401).json({error: "Unauthorized"})
     }
+    const user = await User.findById(req.user)
 
-    const user = await User.findById(decodedToken.id)
-
-    const savedBlog = await new Blog({...body, user: decodedToken.id}).save()
-
+    const savedBlog = await new Blog({...body, user: req.user}).save()
     user.blogs = user.blogs.concat(savedBlog._id)
 
     await user.save()

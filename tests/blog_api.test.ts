@@ -7,14 +7,17 @@ const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 
+// TODO: Make blogs with Users in it.
+//  Create Users first, then add blogs with their token
+
 beforeEach(async () => {
     await Blog.deleteMany({})
-
     const blogObjects = helper
         .initialBlogs
         .map(blog => new Blog(blog))
     const promiseArray = blogObjects.map(blog => blog.save())
     await Promise.all(promiseArray)
+
 })
 
 describe('GET blog API', () => {

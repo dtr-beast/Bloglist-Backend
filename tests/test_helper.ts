@@ -4,7 +4,14 @@ import {User} from "../models/user";
 const blogLink = '/api/blogs'
 const userLink = '/api/users'
 
-const initialBlogs: { title: string, author: string, url: string, likes: number }[] = [
+interface Blogs {
+    title: string,
+    author: string,
+    url: string,
+    likes: number,
+}
+
+const initialBlogs: Blogs[] = [
     {
         title: 'Go To Statement Considered Harmful',
         author: 'Edger W. Dijkstra',

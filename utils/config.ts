@@ -6,8 +6,8 @@ const MONGODB_URL = process.env.NODE_ENV === 'TEST'
     : process.env.MONGODB_URL
 
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS)
+const SIGN_KEY = process.env.SIGN_KEY
 
-const SIGN_KEY =  process.env.SIGN_KEY
 export {
     MONGODB_URL,
     PORT,

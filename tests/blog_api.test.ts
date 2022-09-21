@@ -9,7 +9,7 @@ import mongoose from "mongoose"
 
 const api = supertest(app)
 let token = ""
-
+// TODO: Use falso to create fake data.
 beforeEach(async () => {
   // Reset Database
   await User.deleteMany({})

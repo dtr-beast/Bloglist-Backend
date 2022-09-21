@@ -34,7 +34,7 @@ app.use("/api/users", userRouter)
 app.use("/api/login", loginRouter)
 
 if (process.env.NODE_ENV === "TEST") {
-  const testingRouter = require("./routes/testing")
+  const testingRouter = require("./routes/testing").default
   app.use("/api/testing", testingRouter)
   logger.info("Testing Mode")
 }

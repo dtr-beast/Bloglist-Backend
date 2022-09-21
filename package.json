@@ -4,7 +4,6 @@
   "private": false,
   "scripts": {
     "dev": "tsnd --respawn --files index.ts",
-    "start": "ts-node-dev index.ts",
     "test": "cross-env NODE_ENV=TEST jest --verbose --runInBand",
     "test:e2e": "cross-env NODE_ENV=TEST ts-node-dev index.ts",
     "prettier": "prettier --write ."

@@ -1,88 +1,110 @@
-import {Blog} from "../models/blog"
+import { Blog, BlogsParam } from "../models/blog"
+import { User } from "../models/user"
+import { SALT_ROUNDS, SIGN_KEY } from "../utils/config"
+import app from "../app"
+import helper from "./test_helper"
 
-const supertest = require('supertest')
-const mongoose = require('mongoose')
-const helper = require('./test_helper')
+import supertest from "supertest"
+import mongoose from "mongoose"
 
-const app = require('../app')
 const api = supertest(app)
-
-// TODO: Make blogs with Users in it.
-//  Create Users first, then add blogs with their token
+let token = ""
 
 beforeEach(async () => {
-    await Blog.deleteMany({})
-    const blogObjects = helper
-        .initialBlogs
-        .map(blog => new Blog(blog))
-    const promiseArray = blogObjects.map(blog => blog.save())
-    await Promise.all(promiseArray)
+  // Reset Database
+  await User.deleteMany({})
+  await Blog.deleteMany({})
 
+  // Generate a dummy user for authentication
+  const bcrypt = require("bcrypt")
+  const passwordHash = await bcrypt.hash("sekret", SALT_ROUNDS)
+  const user = await new User({
+    username: "root",
+    name: "rooter",
+    passwordHash,
+  }).save()
+
+  const jwt = require("jsonwebtoken")
+  token = jwt.sign(
+    {
+      username: user.username,
+      id: user._id,
+    },
+    SIGN_KEY
+  )
+  // Generate dummy blogs and add them to the database
+  const blogObjects = helper.initialBlogs.map(
+    (blog) => new Blog({ ...blog, user: user.id })
+  )
+  const promiseArray = blogObjects.map((blog) => blog.save())
+  await Promise.all(promiseArray)
 })
 
-describe('GET blog API', () => {
-    test('Correct Amount of blogs in the database', async () => {
-        const response = await api.get(helper.blogLink)
-        expect(response.body).toHaveLength(helper.initialBlogs.length)
-    })
+describe("GET blog API", () => {
+  test("Correct Amount of blogs in the database", async () => {
+    const response = await api.get(helper.blogLink)
+    expect(response.body).toHaveLength(helper.initialBlogs.length)
+  })
 
-    test('Blogs contains ID parameter', async () => {
-        const response = await api.get(helper.blogLink)
+  test("Blogs contains ID parameter", async () => {
+    const response = await api.get(helper.blogLink)
 
-        response.body.forEach((blog) => {
-            expect(blog.id).toBeDefined()
-        })
+    // TODO: Type this blog, use ZOD for data validation and use those types
+    response.body.forEach((blog: any) => {
+      expect(blog.id).toBeDefined()
     })
+  })
 })
 
-// TODO: Fix, add token authentication
-describe('POST blog API', () => {
-    test('Blog added to the list', async () => {
-        const newBlog = {
-            title: "Mechanical Engineering",
-            author: "RD Sharma",
-            url: "https://mech.com/",
-            likes: 12
-        }
-        const response = await api
-            .post(helper.blogLink)
-            .send(newBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
+describe("POST blog API", () => {
+  test("Blog added to the list", async () => {
+    const newBlog = {
+      title: "Mechanical Engineering",
+      author: "RD Sharma",
+      url: "https://mech.com/",
+      likes: 12,
+    }
+    const response = await api
+      .post(helper.blogLink)
+      .send(newBlog)
+      .auth(token, { type: "bearer" })
+      .expect(201)
+      .expect("Content-Type", /application\/json/)
 
-        expect(response.body).toMatchObject(newBlog)
-    })
+    expect(response.body).toMatchObject(newBlog)
+  })
 
-    test('Likes declared as 0 if not given explicitly in POST request', async () => {
-        const newBlog = {
-            title: "Mechanical Engineering II",
-            author: "RD Sharma Ji",
-            url: "https://mech2.com/",
-        }
+  test("Likes declared as 0 if not given explicitly in POST request", async () => {
+    const newBlog = {
+      title: "Mechanical Engineering II",
+      author: "RD Sharma Ji",
+      url: "https://mech2.com/",
+    }
 
-        const response = await api
-            .post(helper.blogLink)
-            .send(newBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
+    const response = await api
+      .post(helper.blogLink)
+      .send(newBlog)
+      .auth(token, { type: "bearer" })
+      .expect(201)
+      .expect("Content-Type", /application\/json/)
 
-        expect(response.body).toMatchObject({...newBlog, likes: 0})
+    expect(response.body).toMatchObject({ ...newBlog, likes: 0 })
+  })
 
-    })
+  test("POST Request is rejected is the title or url property is missing", async () => {
+    const newBlog = {
+      author: "Ram Kishor",
+      likes: 5,
+    }
 
-    test('POST Request is rejected is the title or url property is missing', async () => {
-        const newBlog = {
-            author: 'Ram Kishor',
-            likes: 5
-        }
-
-        await api
-            .post(helper.blogLink)
-            .send(newBlog)
-            .expect(400)
-    })
+    await api
+      .post(helper.blogLink)
+      .send(newBlog)
+      .auth(token, { type: "bearer" })
+      .expect(400)
+  })
 })
 
 afterAll(async () => {
-    await mongoose.connection.close()
+  await mongoose.connection.close()
 })
